@@ -1,5 +1,9 @@
 package com.husseinabdallah287.azurefileshare.controller;
 
+import com.azure.storage.blob.BlobClient;
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.file.share.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -61,6 +65,26 @@ public class AzureFileStorage {
     }
 
 
+    @PostMapping(value = "/blobContainer/upload")
+    public String blobContainers(){
+
+        String localPath = "./001/";
+        String fileName = "report.pdf";
+
+        BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
+                .connectionString(connectionString)
+                .buildClient();
+
+        BlobContainerClient blobContainerClient = blobServiceClient
+                .createBlobContainerIfNotExists(shareName);
+
+        BlobClient blobClient = blobContainerClient.getBlobClient(localPath + fileName);
+        System.out.println("\nUploading to Blob storage as blob:\n\t" + blobClient.getBlobUrl());
+        blobClient.uploadFromFile(localPath + fileName);
+
+
+        return "successful upload";
+    }
 
 
 }
