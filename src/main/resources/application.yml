@@ -1,0 +1,14 @@
+azure:
+  storage:
+    account:
+      shareName: lct
+      connection:
+        string: BlobEndpoint=https://mishobo.blob.core.windows.net/;QueueEndpoint=https://mishobo.queue.core.windows.net/;FileEndpoint=https://mishobo.file.core.windows.net/;TableEndpoint=https://mishobo.table.core.windows.net/;SharedAccessSignature=sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2023-09-01T13:41:45Z&st=2023-05-27T05:41:45Z&sip=217.199.151.10&spr=https,http&sig=HwpeVtNKLhItEtb8js%2BAZqrqNKGpMb3iY9T5OYKtQd4%3D
+      sas:
+        token: ?sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2023-09-01T13:41:45Z&st=2023-05-27T05:41:45Z&sip=217.199.151.10&spr=https,http&sig=HwpeVtNKLhItEtb8js%2BAZqrqNKGpMb3iY9T5OYKtQd4%3D
+        string-key1: DefaultEndpointsProtocol=https;AccountName=mishobo;AccountKey=wmcVSTZOqgyvTozgz0gMhdaOlHDCQTl9clPoI22Tv+aiVTJr4Kc2YsiiEZmaNgyXHdCJkIQ+tHyt+AStjNwGcA==;EndpointSuffix=core.windows.net
+
+storage:
+  account:
+    #connection: DefaultEndpointsProtocol=https;AccountName=brstorageacc;AccountKey=vM1VoyCagKECD17cMzn4XesBunt+xNHCRdTR6zB4U2N1bnoh5gktIxid+zgSE73EGv1SeJ/4pkp++AStTJllPQ==;EndpointSuffix=core.windows.net
+    connection: DefaultEndpointsProtocol=https;AccountName=mishobo;AccountKey=wmcVSTZOqgyvTozgz0gMhdaOlHDCQTl9clPoI22Tv+aiVTJr4Kc2YsiiEZmaNgyXHdCJkIQ+tHyt+AStjNwGcA==;EndpointSuffix=core.windows.net
