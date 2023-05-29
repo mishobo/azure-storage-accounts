@@ -5,8 +5,14 @@ import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.file.share.*;
+import com.husseinabdallah287.azurefileshare.fileUpload.FileUploadUtil;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("azure")
@@ -66,10 +72,16 @@ public class AzureFileStorage {
 
 
     @PostMapping(value = "/blobContainer/upload")
-    public String blobContainers(){
+    public String blobContainers(
+            @RequestParam("directoryPath") String directoryPath,
+            @RequestParam("file") MultipartFile multipartFile
+    ) throws IOException {
 
-        String localPath = "./001/";
-        String fileName = "report.pdf";
+        String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        long size = multipartFile.getSize();
+        String filePath = "./Files-Upload/" + FileUploadUtil.saveFile(fileName, multipartFile);
+
+        System.out.println("filePath :" + filePath);
 
         BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
                 .connectionString(connectionString)
@@ -78,9 +90,9 @@ public class AzureFileStorage {
         BlobContainerClient blobContainerClient = blobServiceClient
                 .createBlobContainerIfNotExists(shareName);
 
-        BlobClient blobClient = blobContainerClient.getBlobClient(localPath + fileName);
+        BlobClient blobClient = blobContainerClient.getBlobClient(filePath);
         System.out.println("\nUploading to Blob storage as blob:\n\t" + blobClient.getBlobUrl());
-        blobClient.uploadFromFile(localPath + fileName);
+        blobClient.uploadFromFile(filePath);
 
 
         return "successful upload";
