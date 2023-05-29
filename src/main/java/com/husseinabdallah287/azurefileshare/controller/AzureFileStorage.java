@@ -30,11 +30,12 @@ public class AzureFileStorage {
 
 
     @PostMapping(value = "/fileShare/upload")
-    public String fileShare(){
-        String filePath = "E:/projects/Britam/azure-file-share/001/report.pdf";
-        String fileName = "report_1.pdf";
-        String directoryPath = "008";
+    public String fileShare(@RequestParam("file") MultipartFile multipartFile) throws IOException {
         String shareURL = String.format("https://mishobo.file.core.windows.net", "mishobo");
+
+        String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        long size = multipartFile.getSize();
+        String filePath = "./Files-Upload/" + FileUploadUtil.saveFile(fileName, multipartFile);
 
         try {
             ShareClient shareClient = new ShareClientBuilder()
@@ -49,7 +50,7 @@ public class AzureFileStorage {
                     .connectionString(connectionString)
                     .endpoint(shareURL)
                     .shareName(shareName)
-                    .resourcePath(directoryPath)
+                    .resourcePath("011")
                     .buildDirectoryClient();
 
             directoryClient.createIfNotExists();
@@ -58,7 +59,7 @@ public class AzureFileStorage {
                     .connectionString(connectionString)
                     .endpoint(shareURL)
                     .shareName(shareName)
-                    .resourcePath(directoryPath)
+                    .resourcePath("011")
                     .buildFileClient();
 
             fileClient.uploadFromFile(filePath);
