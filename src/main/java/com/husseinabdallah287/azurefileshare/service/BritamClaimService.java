@@ -16,7 +16,7 @@ public class BritamClaimService {
     private DBConnection con;
 
     public String getBritamClaims() throws SQLException {
-        con.connectToDB(repository.getBritamInvoiceHeader);
+        con.connectToDB(repository.getBritamInvoiceHeader, repository.getBritamInvoice, repository.getBritamInvoiceLines, repository.getDiagnosis);
         return "fetched Britam claims successfully";
     }
 
