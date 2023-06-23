@@ -46,4 +46,7 @@ public class BritamClaimDTO {
         this.invoiceLines = invoiceLines;
         this.diagnosis = diagnosis;
     }
+
+
+
 }
