@@ -1,14 +1,19 @@
 package com.husseinabdallah287.azurefileshare.repository;
 
-import com.google.gson.Gson;
 import com.husseinabdallah287.azurefileshare.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 @Component
 public class DBConnection {
@@ -24,6 +29,9 @@ public class DBConnection {
 
     @Autowired
     private Repository repository;
+
+    @Autowired
+    private WebClient.Builder webClient;
 
 
     public Req connectToDB(int visitNumber,String query1, String query2, String query3, String query4) throws SQLException {
@@ -92,8 +100,7 @@ public class DBConnection {
 
                     Req req = new Req();
                     req.setReq(claim);
-                    Gson britamClaim = new Gson();
-                    System.out.println("britam json claim :" + britamClaim.toJson(req));
+                    sendBritamClaim(req);
                     return req;
                 }
             }
@@ -130,5 +137,53 @@ public class DBConnection {
         }
         return new PayerMappings(404);
     }
+
+    public void sendBritamClaim(Req req){
+        System.out.println("request body :" + req);
+        WebClient britamClaimClient = WebClient.builder()
+                .baseUrl("https://apitest.britam.com/MedicalClaims/ProxyServices/MedicalClaimsProxyServiceRS/claim")
+                .build();
+
+        Res res = britamClaimClient
+                .post()
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .body(Mono.just(req), Res.class)
+                .retrieve()
+                .bodyToMono(Res.class)
+                .block();
+
+        assert res != null;
+        System.out.println("invoice Id : " + res.getRes().getInvoiceId());
+
+
+    }
+
+    public void sendBritamDocuments(String invoiceNumber) throws SQLException {
+        try (Connection connection = DriverManager.getConnection(dbUrl, username, password)) {
+
+            PreparedStatement preparedStatement = connection.prepareStatement(repository.getBritamInvoiceDocument);
+            preparedStatement.setString(1, invoiceNumber);
+            ResultSet rs = preparedStatement.executeQuery();
+            rs.next();
+
+            Document doc = webClient.build()
+                    .get()
+                    .uri("http://34.159.184.24:81/api/file/download?name=" + rs.getString(""))
+                    .retrieve()
+                    .bodyToMono(Document.class)
+                    .block();
+
+            System.out.println("document link :" + doc.getData());
+
+            PreparedStatement preparedStatement1 = connection.prepareStatement(repository.getBritamClaimDocument);
+            preparedStatement1.setString(1, invoiceNumber);
+            ResultSet rs1 = preparedStatement1.executeQuery();
+            rs1.next();
+
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
 
 }

@@ -17,4 +17,9 @@ public class Repository {
 
     public final String getScheme = "select c.policy_id, py.plan_id, pn.plan_name from membership.category c inner join membership.policy py on py.policy_id = c.policy_id " +
             "inner join membership.plan pn on pn.plan_id = py.plan_id where c.category_id = ?;";
+    // SELECT d.file_url FROM claims.document d where d.invoice_number = ?;
+    public final String getBritamInvoiceDocument = "SELECT d.file_url FROM claims.document d where d.invoice_number = ? and d.type = \"INVOICE\"";
+    public final String getBritamClaimDocument = "SELECT d.file_url FROM claims.document d where d.invoice_number = ? and d.type = \"CLAIM\"";
+
+
 }
