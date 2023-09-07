@@ -110,7 +110,32 @@
 			<version>${kotlin.version}</version>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.13</version>
+		</dependency>
+
+
 	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>allow-snapshots</id>
+			<activation><activeByDefault>true</activeByDefault></activation>
+			<repositories>
+				<repository>
+					<id>snapshots-repo</id>
+					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+					<releases><enabled>false</enabled></releases>
+					<snapshots><enabled>true</enabled></snapshots>
+				</repository>
+			</repositories>
+		</profile>
+	</profiles>
+
 
 	<dependencyManagement>
 		<dependencies>

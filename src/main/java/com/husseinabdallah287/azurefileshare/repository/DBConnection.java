@@ -138,12 +138,11 @@ public class DBConnection {
         return new PayerMappings(404);
     }
 
-    public void sendBritamClaim(Req req){
+    public void sendBritamClaim(Req req) throws SQLException {
         System.out.println("request body :" + req);
         WebClient britamClaimClient = WebClient.builder()
                 .baseUrl("https://apitest.britam.com/MedicalClaims/ProxyServices/MedicalClaimsProxyServiceRS/claim")
                 .build();
-
         Res res = britamClaimClient
                 .post()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -154,31 +153,42 @@ public class DBConnection {
 
         assert res != null;
         System.out.println("invoice Id : " + res.getRes().getInvoiceId());
-
-
+        sendBritamDocuments(res.getRes().getInvoiceId(), req.getReq().getProviderCode(), req.getReq().getInvoiceNumber());
     }
 
-    public void sendBritamDocuments(String invoiceNumber) throws SQLException {
+    public void sendBritamDocuments(String invoiceId, String providerCode, String invoiceNumber) throws SQLException {
         try (Connection connection = DriverManager.getConnection(dbUrl, username, password)) {
+                PreparedStatement preparedStatement = connection.prepareStatement(repository.getBritamInvoiceDocument);
+                preparedStatement.setString(1, invoiceNumber);
+                ResultSet rs = preparedStatement.executeQuery();
+                rs.next();
+                System.out.println("invoice :" + rs.getString("file_url"));
+                PreparedStatement preparedStatement1 = connection.prepareStatement(repository.getBritamClaimDocument);
+                preparedStatement1.setString(1, invoiceNumber);
+                ResultSet rs1 = preparedStatement1.executeQuery();
+                rs1.next();
+                System.out.println("claim :" + rs1.getString("file_url"));
+                System.out.println("invoiceId :" + invoiceId);
+                System.out.println("providerCode :" + providerCode);
 
-            PreparedStatement preparedStatement = connection.prepareStatement(repository.getBritamInvoiceDocument);
-            preparedStatement.setString(1, invoiceNumber);
-            ResultSet rs = preparedStatement.executeQuery();
-            rs.next();
-
-            Document doc = webClient.build()
-                    .get()
-                    .uri("http://34.159.184.24:81/api/file/download?name=" + rs.getString(""))
-                    .retrieve()
-                    .bodyToMono(Document.class)
-                    .block();
-
-            System.out.println("document link :" + doc.getData());
-
-            PreparedStatement preparedStatement1 = connection.prepareStatement(repository.getBritamClaimDocument);
-            preparedStatement1.setString(1, invoiceNumber);
-            ResultSet rs1 = preparedStatement1.executeQuery();
-            rs1.next();
+                WebClient lctDocumentService = WebClient.builder()
+                        .baseUrl("http://localhost:8095/api/file/uploadBritamDocuments")
+                        .build();
+                lctDocumentService
+                        .post()
+                        .uri(uriBuilder -> {
+                            try {
+                                return uriBuilder
+                                        .queryParam("invoiceId", invoiceId)
+                                        .queryParam("providerCode", providerCode)
+                                        .queryParam("invoiceUrl", rs.getString("file_url"))
+                                        .queryParam("claimUrl", rs1.getString("file_url"))
+                                        .build();
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+                        })
+                        .retrieve().bodyToMono(String.class).block();
 
         } catch (SQLException e){
             e.printStackTrace();

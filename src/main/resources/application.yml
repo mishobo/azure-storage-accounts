@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mariadb://172.23.16.1:3308/claims?allowPublicKeyRetrieval=true&useSSL=False&characterEncoding=UTF-8
+    url: jdbc:mariadb://172.18.48.1:3308/claims?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=False&characterEncoding=UTF-8
     username: root
     password: 31875595
     driverClassName: com.mysql.cj.jdbc.Driver
@@ -30,3 +30,15 @@ storage:
   account:
     connection: DefaultEndpointsProtocol=https;AccountName=brstorageacc;AccountKey=vM1VoyCagKECD17cMzn4XesBunt+xNHCRdTR6zB4U2N1bnoh5gktIxid+zgSE73EGv1SeJ/4pkp++AStTJllPQ==;EndpointSuffix=core.windows.net
     #connection: DefaultEndpointsProtocol=https;AccountName=mishobo;AccountKey=wmcVSTZOqgyvTozgz0gMhdaOlHDCQTl9clPoI22Tv+aiVTJr4Kc2YsiiEZmaNgyXHdCJkIQ+tHyt+AStjNwGcA==;EndpointSuffix=core.windows.net
+
+ken-gen:
+  client:
+    id: ff6ed4c0-0ab2-4ffa-bf8e-b5542eeeac72
+    secret: Zqz8Q~GghIpJklzEYd.g4XPIkb37wOR2eToxRcqg
+  tenant:
+    id: ff6ed4c0-0ab2-4ffa-bf8e-b5542eeeac72
+  user:
+    name: ""
+    password: ""
+  scope: https://graph.microsoft.com/.default
+

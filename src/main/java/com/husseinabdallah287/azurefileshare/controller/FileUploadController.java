@@ -16,7 +16,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("file")
-public class FileUpload {
+public class FileUploadController {
 
     @PostMapping("/upload")
     public ResponseEntity<FileUploadResponse> uploadFile(
