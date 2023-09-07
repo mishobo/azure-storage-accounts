@@ -1,7 +1,9 @@
 package com.husseinabdallah287.azurefileshare.controller;
 
+import com.husseinabdallah287.azurefileshare.auth.AuthenticationProvider;
 import com.husseinabdallah287.azurefileshare.fileUpload.FileUploadUtil;
 import com.husseinabdallah287.azurefileshare.model.FileUploadResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -18,6 +20,9 @@ import java.util.Objects;
 @RequestMapping("file")
 public class FileUploadController {
 
+    @Autowired
+    private AuthenticationProvider authenticationProvider;
+
     @PostMapping("/upload")
     public ResponseEntity<FileUploadResponse> uploadFile(
             @RequestParam("file") MultipartFile multipartFile)
@@ -26,6 +31,8 @@ public class FileUploadController {
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
         long size = multipartFile.getSize();
         String filePath = FileUploadUtil.saveFile(fileName, multipartFile);
+
+
 
         FileUploadResponse response = new FileUploadResponse(fileName, size,"/downloadFile/" + filePath);
 

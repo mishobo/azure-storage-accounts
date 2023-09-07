@@ -1,18 +1,25 @@
 package com.husseinabdallah287.azurefileshare.auth;
 
+import com.husseinabdallah287.azurefileshare.fileUpload.FileUploadUtil;
 import com.husseinabdallah287.azurefileshare.model.KenGenDrives;
 import com.husseinabdallah287.azurefileshare.model.KenGenToken;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static org.apache.logging.log4j.message.ParameterizedMessage.format;
 
@@ -46,7 +53,7 @@ public class AuthenticationProvider {
 //
 //    }
 
-    public void getAuthToken(){
+    public void getAuthToken(String filePath) throws IOException {
 
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("grant_type", "client_credentials");
@@ -78,10 +85,33 @@ public class AuthenticationProvider {
 
         System.out.println(drives.getValue());
 
-        drives.getValue().forEach(value -> System.out.println(value.getId()));
+        drives.getValue().forEach(
+                value ->
+                        System.out.println(value.getId()
+                        ));
 
+        System.out.println("filePath :" + filePath);
 
+        var bytes = new FileSystemResource((filePath)).getInputStream()
+                .readAllBytes();
 
+//        MultipartBodyBuilder builder = new MultipartBodyBuilder();
+//        builder.part("file", multipartFile.getResource());
+//
+        String uploadFile = WebClient.create()
+                .put()
+                .uri("https://graph.microsoft.com/v1.0/drives/" +
+                        "b!enjU1lkSG0aytcjBa72uMThP1IrLvyJCjpIof8V62Zhw0vWJYTSKSYkx4sWhdDgt" +
+                        "/items/root:/LCT Medical Reports/007/sample.pdf:/content")
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(token.getAccess_token()))
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .bodyValue(bytes)
+                .exchange()
+                .block()
+                .bodyToMono(String.class)
+                .block();
+
+        System.out.println(uploadFile);
     }
 
 
