@@ -1,5 +1,6 @@
 package com.husseinabdallah287.azurefileshare.auth;
 
+import com.husseinabdallah287.azurefileshare.model.KenGenDrives;
 import com.husseinabdallah287.azurefileshare.model.KenGenToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -65,6 +66,19 @@ public class AuthenticationProvider {
 
         System.out.println(token.getAccess_token());
 
+
+        KenGenDrives drives = WebClient.create()
+                .get()
+                .uri("https://graph.microsoft.com/v1.0/drives")
+                .headers(h -> h.setBearerAuth(token.getAccess_token()))
+                .exchange()
+                .block()
+                .bodyToMono(KenGenDrives.class)
+                .block();
+
+        System.out.println(drives.getValue());
+
+        drives.getValue().forEach(value -> System.out.println(value.getId()));
 
 
 
