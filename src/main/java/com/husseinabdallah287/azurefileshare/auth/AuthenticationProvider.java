@@ -2,6 +2,7 @@ package com.husseinabdallah287.azurefileshare.auth;
 
 import com.husseinabdallah287.azurefileshare.model.KenGenDrives;
 import com.husseinabdallah287.azurefileshare.model.KenGenToken;
+import com.husseinabdallah287.azurefileshare.model.kengenRes.UploadFileSharePoint;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
@@ -76,7 +77,7 @@ public class AuthenticationProvider {
         return drives;
     }
 
-    public void uploadFilesTokenGenSharePoint(String filePath, String providerCode, String invoiceName) throws IOException {
+    public UploadFileSharePoint uploadFilesTokenGenSharePoint(String filePath, String providerCode, String invoiceName) throws IOException {
         var token = getKenGenToken();
         var drives = getKenGenSharepointDrives(token);
         String driveId = drives.getValue().get(0).getId();
@@ -86,7 +87,7 @@ public class AuthenticationProvider {
                 .readAllBytes();
 
 
-        String uploadFile = WebClient.create()
+        UploadFileSharePoint uploadFile = WebClient.create()
                 .put()
                 .uri(sharePointUrl +
                         driveId +
@@ -100,11 +101,11 @@ public class AuthenticationProvider {
                 .bodyValue(bytes)
                 .exchange()
                 .block()
-                .bodyToMono(String.class)
+                .bodyToMono(UploadFileSharePoint.class)
                 .block();
 
-        System.out.println(uploadFile);
-
+        System.out.println("Share point url :"+uploadFile.getWebUrl());
+        return uploadFile;
     }
 
 }

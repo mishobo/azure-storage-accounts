@@ -2,6 +2,7 @@ package com.husseinabdallah287.azurefileshare.controller;
 
 import com.husseinabdallah287.azurefileshare.auth.AuthenticationProvider;
 import com.husseinabdallah287.azurefileshare.fileUpload.FileUploadUtil;
+import com.husseinabdallah287.azurefileshare.model.kengenRes.UploadFileSharePoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +19,8 @@ public class UploadDocToSharePoint {
     private AuthenticationProvider authenticationProvider;
 
 
-    @PostMapping("/sharepoint/gtToken")
-    public void getMicrosoftAccess(
+    @PostMapping("/sharepoint/uploadFile")
+    public UploadFileSharePoint getMicrosoftAccess(
             @RequestParam("file") MultipartFile multipartFile,
             @RequestParam("providerCode") String providerCode,
             @RequestParam("invoiceName") String invoiceName
@@ -32,7 +33,7 @@ public class UploadDocToSharePoint {
 
         System.out.println("filePath :" + filePath);
 
-        authenticationProvider.uploadFilesTokenGenSharePoint(filePath, providerCode, invoiceName);
+        return authenticationProvider.uploadFilesTokenGenSharePoint(filePath, providerCode, invoiceName);
     }
 
 }
