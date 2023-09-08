@@ -41,4 +41,7 @@ ken-gen:
     name: ""
     password: ""
   scope: https://graph.microsoft.com/.default
+  sharePoint:
+    url: https://graph.microsoft.com/v1.0/drives/
+    directory: /items/root:/LCT Medical Reports/
 

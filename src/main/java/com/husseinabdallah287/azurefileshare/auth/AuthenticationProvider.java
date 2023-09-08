@@ -33,6 +33,12 @@ public class AuthenticationProvider {
 
     private List<String> scopes = Arrays.asList(scope);
 
+    @Value("${ken-gen.sharePoint.url}")
+    private String sharePointUrl;
+
+    @Value("${ken-gen.sharePoint.directory}")
+    private String sharePointDirectory;
+
     public KenGenToken getKenGenToken(){
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("grant_type", "client_credentials");
@@ -67,18 +73,13 @@ public class AuthenticationProvider {
                 .block();
 
         System.out.println(drives.getValue());
-
-        drives.getValue().forEach(
-                value ->
-                        System.out.println(value.getId()
-                        ));
-
         return drives;
     }
 
     public void uploadFilesTokenGenSharePoint(String filePath, String providerCode, String invoiceName) throws IOException {
         var token = getKenGenToken();
         var drives = getKenGenSharepointDrives(token);
+        String driveId = drives.getValue().get(0).getId();
 
         System.out.println("filePath :" + filePath);
         var bytes = new FileSystemResource((filePath)).getInputStream()
@@ -87,9 +88,9 @@ public class AuthenticationProvider {
 
         String uploadFile = WebClient.create()
                 .put()
-                .uri("https://graph.microsoft.com/v1.0/drives/" +
-                        "b!enjU1lkSG0aytcjBa72uMThP1IrLvyJCjpIof8V62Zhw0vWJYTSKSYkx4sWhdDgt" +
-                        "/items/root:/LCT Medical Reports/" +
+                .uri(sharePointUrl +
+                        driveId +
+                        sharePointDirectory +
                         providerCode +
                         "/" +
                         invoiceName +
@@ -105,30 +106,5 @@ public class AuthenticationProvider {
         System.out.println(uploadFile);
 
     }
-
-
-//    public void getAuthToken(String filePath) throws IOException {
-//        System.out.println("filePath :" + filePath);
-//
-//        var bytes = new FileSystemResource((filePath)).getInputStream()
-//                .readAllBytes();
-//
-//
-//        String uploadFile = WebClient.create()
-//                .put()
-//                .uri("https://graph.microsoft.com/v1.0/drives/" +
-//                        "b!enjU1lkSG0aytcjBa72uMThP1IrLvyJCjpIof8V62Zhw0vWJYTSKSYkx4sWhdDgt" +
-//                        "/items/root:/LCT Medical Reports/007/sample.pdf:/content")
-//                .headers(httpHeaders -> httpHeaders.setBearerAuth(token.getAccess_token()))
-//                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-//                .bodyValue(bytes)
-//                .exchange()
-//                .block()
-//                .bodyToMono(String.class)
-//                .block();
-//
-//        System.out.println(uploadFile);
-//    }
-
 
 }
