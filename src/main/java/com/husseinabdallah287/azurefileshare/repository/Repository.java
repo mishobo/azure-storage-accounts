@@ -21,5 +21,7 @@ public class Repository {
     public final String getBritamInvoiceDocument = "SELECT d.file_url FROM claims.document d where d.invoice_number = ? and d.type = \"INVOICE\"";
     public final String getBritamClaimDocument = "SELECT d.file_url FROM claims.document d where d.invoice_number = ? and d.type = \"CLAIM\"";
 
+    public final String updateClaimStatus = "update visit set payer_status = 'SENT', payer_claim_reference = ? where invoice_number=?;";
+
 
 }

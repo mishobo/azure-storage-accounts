@@ -86,7 +86,6 @@ public class AuthenticationProvider {
         var bytes = new FileSystemResource((filePath)).getInputStream()
                 .readAllBytes();
 
-
         UploadFileSharePoint uploadFile = WebClient.create()
                 .put()
                 .uri(sharePointUrl +
